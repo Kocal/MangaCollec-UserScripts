@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MangaCollect prix total
 // @namespace    https://www.mangacollec.com/
-// @version      0.2
+// @version      0.3
 // @author       Kocal
 // @match        https://www.mangacollec.com/user/*/collection
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=mangacollec.com
@@ -46,7 +46,7 @@
             }
 
             if (null === offer) {
-                throw new Error(`Impossible de récupérer l'offre pour le volume "${volume.id}", raisons : ${errors.map(error => ' - ' + error.message).join("\n")}`);
+                throw new Error(`Impossible de récupérer l'offre pour le tome "${volume.id}", raisons : ${errors.map(error => ' - ' + error.message).join("\n")}`);
             }
 
             return {
@@ -59,7 +59,7 @@
         async getVolumeOfferFromAmazon(volume) {
             const response = await this.request('GET', `v1/amazon_offer/${volume.asin}`, {});
             if (!response.ok) {
-                throw new Error(`Impossible de récupérer l'offre Amazon pour le volume "${volume.asin}" via l'API.`);
+                throw new Error(`Impossible de récupérer l'offre Amazon pour le tome ASIN "${volume.asin}" via l'API.`);
             }
 
             return await response.json();
@@ -69,7 +69,7 @@
         async getVolumeOfferFromBDFugue(volume) {
             const response = await this.request('GET', `v1/bdfugue_offer/${volume.isbn}`, {});
             if (!response.ok) {
-                throw new Error(`Impossible de récupérer l'offre BDfugue "${volume.isbn}" via l'API.`);
+                throw new Error(`Impossible de récupérer l'offre BDfugue pour le tome ISBN "${volume.isbn}" via l'API.`);
             }
 
             return await response.json();
@@ -188,8 +188,8 @@
 
         function render() {
             $elPrice.innerHTML = `<span style="font-weight: bold">${priceFormatter.format(counters.price / 100)}</span>
-              (<span title="Volumes traités" style="text-decoration: underline dotted">C: ${counters.handledVolumesCount}</span>
-              / <span title="Volumes ignorés (le prix n'a pas pu être récupéré)" style="text-decoration: underline dotted">I: ${counters.totalVolumesWithoutPrice}</span>)
+              (<span title="Tomes traités" style="text-decoration: underline dotted">C: ${counters.handledVolumesCount}</span>
+              / <span title="Tomes ignorés (le prix n'a pas pu être récupéré)" style="text-decoration: underline dotted">I: ${counters.totalVolumesWithoutPrice}</span>)
             `;
         }
     }
