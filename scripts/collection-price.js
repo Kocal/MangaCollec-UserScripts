@@ -1,8 +1,7 @@
 // ==UserScript==
 // @name         MangaCollect prix total
 // @namespace    https://www.mangacollec.com/
-// @version      0.1
-// @description  try to take over the world!
+// @version      0.2
 // @author       Kocal
 // @match        https://www.mangacollec.com/user/*/collection
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=mangacollec.com
@@ -122,32 +121,33 @@
     }
 
     async function setupDom() {
-        async function getElStats() {
-            let $elStats = document.querySelector('a[href^="/user/"][href$="/collection/statistics"]');
-
-            return new Promise((resolve, reject) => {
-                if ($elStats) {
-                    return resolve($elStats);
+        async function getElCounters() {
+            let $elBullet = null;
+            await (new Promise((resolve, reject) => {
+                $elBullet = document.evaluate("//*[contains(text(), ' • ')]", document.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if ($elBullet) {
+                    return resolve($elBullet);
                 }
 
                 const mutationObserver = new MutationObserver((mutations) => {
                     // Si quelqu'un sait pourquoi mon lien n'est pas trouvable via "mutations.forEach(mutation => mutation.addedNodes.forEach(addedNode => ... ))" ...
                     // Du coup on fait à la zob, tant pis :D
-                    $elStats = document.querySelector('a[href^="/user/"][href$="/collection/statistics"]');
-                    if ($elStats) {
+                    $elBullet = document.evaluate("//*[contains(text(), ' • ')]", document.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    if ($elBullet) {
                         mutationObserver.disconnect();
-                        return resolve($elStats);
+                        return resolve($elBullet);
                     }
                 });
                 mutationObserver.observe(document, {
                     childList: true,
                     subtree: true,
                 });
-            });
+            }));
+
+            return $elBullet.parentNode;
         }
 
-        const $elStats = await getElStats();
-        const $elCounters = $elStats.previousElementSibling.previousElementSibling;
+        const $elCounters = await getElCounters();
 
         const $elBullet = $elCounters.children[1].cloneNode(true);
         $elCounters.appendChild($elBullet);
