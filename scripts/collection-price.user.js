@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         MangaCollect prix total
 // @namespace    https://www.mangacollec.com/
-// @version      0.3
+// @version      0.4
 // @author       Kocal
-// @match        https://www.mangacollec.com/user/*/collection
+// @match        https://www.mangacollec.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=mangacollec.com
 // @grant        none
 // @run-at       document-end
@@ -124,7 +124,7 @@
         async function getElCounters() {
             let $elBullet = null;
             await (new Promise((resolve, reject) => {
-                $elBullet = document.evaluate("//*[contains(text(), ' • ')]", document.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                $elBullet = document.evaluate("//*[text()=' • ']", document.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                 if ($elBullet) {
                     return resolve($elBullet);
                 }
@@ -132,7 +132,7 @@
                 const mutationObserver = new MutationObserver((mutations) => {
                     // Si quelqu'un sait pourquoi mon lien n'est pas trouvable via "mutations.forEach(mutation => mutation.addedNodes.forEach(addedNode => ... ))" ...
                     // Du coup on fait à la zob, tant pis :D
-                    $elBullet = document.evaluate("//*[contains(text(), ' • ')]", document.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    $elBullet = document.evaluate("//*[text()=' • ']", document.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                     if ($elBullet) {
                         mutationObserver.disconnect();
                         return resolve($elBullet);
@@ -194,5 +194,17 @@
         }
     }
 
-    await run();
+    function shouldRun() {
+        return /\/user\/(?<username>.+)\/collection/.test(window.location.pathname);
+    }
+
+    if (shouldRun()) {
+        await run();
+    }
+
+    window.addEventListener('popstate', async function() {
+        if (shouldRun()) {
+            await run();
+        }
+    });
 })();
