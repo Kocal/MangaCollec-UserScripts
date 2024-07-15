@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MangaCollect prix total
 // @namespace    https://www.mangacollec.com/
-// @version      0.5
+// @version      0.4
 // @author       Kocal
 // @match        https://www.mangacollec.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=mangacollec.com
@@ -158,9 +158,7 @@
     }
 
     async function run() {
-        console.log('run');
         const { $elPrice } = await setupDom();
-        console.log($elPrice);
         const priceFormatter = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' });
         const counters = {
             price: 0,
