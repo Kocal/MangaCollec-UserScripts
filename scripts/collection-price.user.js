@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MangaCollect prix total
 // @namespace    https://www.mangacollec.com/
-// @version      0.4
+// @version      0.5
 // @author       Kocal
 // @match        https://www.mangacollec.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=mangacollec.com
@@ -121,21 +121,21 @@
     }
 
     async function setupDom() {
-        async function getElCounters() {
-            let $elBullet = null;
+        async function getElEditions() {
+            let $elEditionsText = null;
             await (new Promise((resolve, reject) => {
-                $elBullet = document.evaluate("//*[text()=' • ']", document.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                if ($elBullet) {
-                    return resolve($elBullet);
+                $elEditionsText = document.evaluate("//*[text()='ÉDITIONS']", document.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if ($elEditionsText) {
+                    return resolve($elEditionsText);
                 }
 
                 const mutationObserver = new MutationObserver((mutations) => {
                     // Si quelqu'un sait pourquoi mon lien n'est pas trouvable via "mutations.forEach(mutation => mutation.addedNodes.forEach(addedNode => ... ))" ...
                     // Du coup on fait à la zob, tant pis :D
-                    $elBullet = document.evaluate("//*[text()=' • ']", document.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                    if ($elBullet) {
+                    $elEditionsText = document.evaluate("//*[text()='ÉDITIONS']", document.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    if ($elEditionsText) {
                         mutationObserver.disconnect();
-                        return resolve($elBullet);
+                        return resolve($elEditionsText);
                     }
                 });
                 mutationObserver.observe(document, {
@@ -144,23 +144,23 @@
                 });
             }));
 
-            return $elBullet.parentNode;
+            return $elEditionsText.parentNode;
         }
 
-        const $elCounters = await getElCounters();
+        const $elEditions = await getElEditions();
 
-        const $elBullet = $elCounters.children[1].cloneNode(true);
-        $elCounters.appendChild($elBullet);
+        const $elPrice = $elEditions.cloneNode(true);
 
-        const $elPrice = $elCounters.children[0].cloneNode(true);
         $elPrice.textContent = 'Chargement du prix...';
-        $elCounters.appendChild($elPrice);
+        $elEditions.after($elPrice);
 
         return { $elPrice };
     }
 
     async function run() {
+        console.log('run');
         const { $elPrice } = await setupDom();
+        console.log($elPrice);
         const priceFormatter = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' });
         const counters = {
             price: 0,
@@ -179,7 +179,7 @@
 
             counters.price += offer.price;
             counters.handledVolumesCount = Number(index) + 1;
-            if(offer.has_price === false) {
+            if (offer.has_price === false) {
                 counters.totalVolumesWithoutPrice += 1;
             }
 
