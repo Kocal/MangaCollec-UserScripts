@@ -1,10 +1,7 @@
-# MangaCollec-UserScripts
-Des UserScripts pour https://mangacollec.com
+# userScripts
 
-## Pré-requis
+My collection of userScripts.
 
-- TamperMonkey ([Chrome / Brave / Vivaldi](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=fr) ou  [Firefox](https://addons.mozilla.org/fr/firefox/addon/tampermonkey/)).
+## Prerequisites
 
-## Installation
-
-- [Collection Price](https://github.com/Kocal/MangaCollec-UserScripts/raw/main/scripts/collection-price.user.js)
+- TamperMonkey ([Chrome / Brave / Vivaldi](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=fr) or [Firefox](https://addons.mozilla.org/fr/firefox/addon/tampermonkey/)).
